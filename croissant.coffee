@@ -1,4 +1,27 @@
-@Croissant = {}
+@Croissant =
+  Generators: {}
+
+class @Croissant.Level
+
+  constructor: (size) ->
+    @tiles = []
+    if size[0] and size[1]
+      @rows = size[0]
+      @columns = size[1]
+    else
+      @rows = if size[0] then size[0] else size
+      @columns = @rows
+    for row in [0..(@rows-1)]
+      @tiles.push []
+      for col in [0..(@columns-1)]
+        @tiles[row][col] = new Croissant.MapTile('wall')
+    
+
+class @Croissant.MapTile
+
+  constructor: (terrain) ->
+    @terrain = terrain
+
 
 class @Croissant.Canvas
 
@@ -11,10 +34,19 @@ class @Croissant.Canvas
     @size_y = stack.size_y
     @context = element.getContext('2d')
 
-  draw_grid: =>
+  draw_grid: (color = null) =>
+    prev_stroke_style = @context.strokeStyle
+    @context.strokeStyle = color if color
     for pos_x in [0..(@size_x-1)]
       for pos_y in [0..(@size_y-1)]
         @context.strokeRect(pos_x*@gridsize, pos_y*@gridsize, @gridsize, @gridsize)
+    @context.strokeStyle = prev_stroke_style
+
+  clear: () =>
+    @context.clearRect(0, 0, @element.width, @element.height)
+
+  draw_object: =>
+    @context
 
 class @Croissant.CanvasStack
 
@@ -31,7 +63,7 @@ class @Croissant.CanvasStack
     if (@size_x is @size_y) and (@canvas_height is @canvas_width)
       @gridsize = @canvas_width / @size_x
     else
-      throw 'Non-uniform grids!'
+      throw 'Non-uniform grid!'
     @layers = {}
 
     unless @canvas_div.css('position') is 'relative'
