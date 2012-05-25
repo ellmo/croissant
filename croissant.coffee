@@ -15,13 +15,11 @@ class @Croissant.Level
       @tiles.push []
       for col in [0..(@columns-1)]
         @tiles[row][col] = new Croissant.MapTile('wall')
-    
 
 class @Croissant.MapTile
 
   constructor: (terrain) ->
     @terrain = terrain
-
 
 class @Croissant.Canvas
 
@@ -42,11 +40,19 @@ class @Croissant.Canvas
         @context.strokeRect(pos_x*@gridsize, pos_y*@gridsize, @gridsize, @gridsize)
     @context.strokeStyle = prev_stroke_style
 
+  draw_rooms: (room_array, color = null) =>
+    prev_stroke_style = @context.strokeStyle
+    @context.strokeStyle = color if color
+    for room in room_array.rooms
+      normalized_x = Math.floor(room.x[0] * @stack.canvas_width / room_array.level.columns)
+      normalized_width = Math.floor(room.x[1] * @stack.canvas_width / room_array.level.columns) - normalized_x
+      normalized_y = Math.floor(room.y[0] * @stack.canvas_height / room_array.level.rows)
+      normalized_height = Math.floor(room.y[1] * @stack.canvas_height / room_array.level.rows) - normalized_y
+      @context.strokeRect(normalized_x, normalized_y, normalized_width, normalized_height)
+    @context.strokeStyle = prev_stroke_style
+
   clear: () =>
     @context.clearRect(0, 0, @element.width, @element.height)
-
-  draw_object: =>
-    @context
 
 class @Croissant.CanvasStack
 
