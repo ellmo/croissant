@@ -1,5 +1,7 @@
 @Croissant =
   Generators: {}
+  Terrains: {}
+
 
 class @Croissant.Level
 
@@ -21,6 +23,13 @@ class @Croissant.MapTile
   constructor: (terrain) ->
     @terrain = terrain
 
+class @Croissant.Terrain
+
+  constructor: (name, blocking) ->
+    @name = name
+    @blocking = blocking
+    Croissant.Terrains[name] = @
+
 class @Croissant.Canvas
 
   constructor: (element, name, stack) ->
@@ -37,7 +46,7 @@ class @Croissant.Canvas
     @context.strokeStyle = color if color
     for pos_x in [0..(@size_x-1)]
       for pos_y in [0..(@size_y-1)]
-        @context.strokeRect(pos_x*@gridsize, pos_y*@gridsize, @gridsize, @gridsize)
+        @context.strokeRect( pos_x * @gridsize, pos_y * @gridsize, @gridsize, @gridsize)
     @context.strokeStyle = prev_stroke_style
 
   draw_rooms: (room_array, color = null) =>
@@ -73,7 +82,7 @@ class @Croissant.CanvasStack
     @layers = {}
 
     unless @canvas_div.css('position') is 'relative'
-      @canvas_div.css('position', 'relative') 
+      @canvas_div.css('position', 'relative')
     @add_canvases(layers)
 
   add_canvases: (layer_names) =>
